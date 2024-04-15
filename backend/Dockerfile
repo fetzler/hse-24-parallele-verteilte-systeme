@@ -1,7 +1,7 @@
 FROM golang:1.22
 WORKDIR /usr/src/app
-COPY backend/go.mod ./
+COPY go.mod ./
 RUN go mod download && go mod verify
 COPY . .
-RUN go build -v -o /usr/local/bin/app ./backend/...
+RUN go build -v -o /usr/local/bin/app ./...
 CMD ["app"]
