@@ -9,7 +9,8 @@ services:
     ports:
       - '5432:5432'
     volumes: 
-      - db:/var/lib/postgresql/data
+      - ./database/postgres-data:/var/lib/postgresql/data
+      - ./database/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
 
   backend:
     build: 
