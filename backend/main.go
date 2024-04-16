@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 )
 
 func helloWorld(context *gin.Context) {
@@ -11,8 +14,13 @@ func helloWorld(context *gin.Context) {
 }
 
 func main() {
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:postgres@localhost:5432")
+	if err != nil {
+		log.Fatalln("error connecting to the database.")
+	}
+	defer conn.Close(context.Background())
 	router := gin.Default()
 	router.GET("/helloWorld", helloWorld)
 	fmt.Print("Hello World")
-	router.Run()
+	router.Run("localhost:8081")
 }
