@@ -14,13 +14,14 @@ func helloWorld(context *gin.Context) {
 }
 
 func main() {
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:postgres@localhost:5432")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:postgres@db:5432")
 	if err != nil {
+		fmt.Println(err)
 		log.Fatalln("error connecting to the database.")
 	}
 	defer conn.Close(context.Background())
 	router := gin.Default()
 	router.GET("/helloWorld", helloWorld)
 	fmt.Print("Hello World")
-	router.Run("localhost:8081")
+	router.Run()
 }
