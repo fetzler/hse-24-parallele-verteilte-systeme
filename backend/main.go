@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -32,6 +33,28 @@ func updateTodoItem(c *gin.Context) {
 	c.String(http.StatusOK, http.StatusText(http.StatusOK))
 }
 
+func getTodoItemById(c *gin.Context) {
+	rows, _ := conn.Query(&gin.Context{}, "SELECT task_id, title FROM tasks WHERE task_id = $1", c.Param("id"))
+	todoItem, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[TodoItem])
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			c.String(http.StatusNotFound, http.StatusText(http.StatusNotFound))
+		}
+		return
+	}
+	c.JSON(http.StatusOK, todoItem)
+}
+
+func getAllTodoItems(c *gin.Context) {
+	rows, _ := conn.Query(&gin.Context{}, "SELECT task_id, title FROM tasks")
+	todoItems, err := pgx.CollectRows(rows, pgx.RowToStructByName[TodoItem])
+	if err != nil {
+		c.String(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	c.JSON(http.StatusOK, todoItems)
+}
+
 var conn *pgx.Conn
 
 func main() {
@@ -45,5 +68,7 @@ func main() {
 	router := gin.Default()
 	router.POST("/todos/:title", createTodoItem)
 	router.PUT("/todos/:id/:title", updateTodoItem)
+	router.GET("/todos/:id", getTodoItemById)
+	router.GET("/todos", getAllTodoItems)
 	router.Run()
 }
