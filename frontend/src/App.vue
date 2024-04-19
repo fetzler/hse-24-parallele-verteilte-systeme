@@ -1,47 +1,50 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <div>
+    <div class="header">
+      <h1 class="title">Most beautiful of all Java Todo Lists</h1>
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+    <div class="add-todo">
+      <h2>Add a Todo</h2>
+      <div class="todo-input">
+        <input type="text" v-model="newTodo" placeholder="Enter Todo Description">
+        <button @click="addTodo">Submit!</button>
+      </div>
+    </div>
+    <div class="todo-list">
+      <h2>Todo List</h2>
+      <div v-for="(todo, index) in todos" :key="index" class="todo-item">
+        <span class="item">{{ todo.description }}</span>
+        <button @click="markAsDone(index)">Done!</button>
+      </div>
+    </div>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+<script>
+export default {
+  data() {
+    return {
+      newTodo: '',
+      todos: []
+    };
+  },
+  methods: {
+    addTodo() {
+      if (this.newTodo.trim() !== '') {
+        this.todos.push({
+          description: this.newTodo,
+          done: false
+        });
+        this.newTodo = '';
+      }
+    },
+    markAsDone(index) {
+      this.todos.splice(index,1);
+    }
   }
+};
+</script>
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
+<style>
+/* CSS-Styling hier */
 </style>
