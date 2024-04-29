@@ -1,50 +1,77 @@
 <template>
   <div>
-    <div class="header">
-      <h1 class="title">Most beautiful of all Java Todo Lists</h1>
+    <h1>TODO List</h1>
+    <div>
+      <input type="text" v-model="newTodoText" placeholder="Enter your todo">
+      <button @click="addTodo">Add Todo</button>
     </div>
-    <div class="add-todo">
-      <h2>Add a Todo</h2>
-      <div class="todo-input">
-        <input type="text" v-model="newTodo" placeholder="Enter Todo Description">
-        <button @click="addTodo">Submit!</button>
-      </div>
-    </div>
-    <div class="todo-list">
-      <h2>Todo List</h2>
-      <div v-for="(todo, index) in todos" :key="index" class="todo-item">
-        <span class="item">{{ todo.description }}</span>
-        <button @click="markAsDone(index)">Done!</button>
-      </div>
-    </div>
+    <ul>
+      <li v-for="(todo, index) in todos" :key="todo.id">
+        <span>{{ todo.title }}</span>
+        <button @click="markAsDone(todo.id)">Done!</button>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
+import { ref, onMounted } from 'vue';
+import axios from 'axios'
+
 export default {
-  data() {
-    return {
-      newTodo: '',
-      todos: []
-    };
-  },
-  methods: {
-    addTodo() {
-      if (this.newTodo.trim() !== '') {
-        this.todos.push({
-          description: this.newTodo,
-          done: false
-        });
-        this.newTodo = '';
+  setup() {
+    const newTodoText = ref('');
+    const todos = ref([]);
+
+    const addTodo = async () => {
+      if (newTodoText.value.trim() !== '') {
+        try {
+          const response = await fetch(`/todos/${newTodoText.value}`, {
+            method: 'POST',
+          });
+          if (response.ok) {
+            getTodos()
+            newTodoText.value = '';
+          } else {
+            console.error('Failed to add todo:', response.statusText);
+          }
+        } catch (error) {
+          console.error('Failed to add todo:', error);
+        }
       }
-    },
-    markAsDone(index) {
-      this.todos.splice(index,1);
-    }
+    };
+
+    const markAsDone = async (todoId) => {
+      try {
+        const response = await fetch(`/todos/${todoId}`, {
+          method: 'DELETE'
+        });
+        if (response.ok) {
+          console.log('Todo marked as done:', todoId);
+          todos.value = todos.value.filter(todo => todo.id !== todoId);
+        } else {
+          console.error('Failed to mark todo as done:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Failed to mark todo as done:', error);
+      }
+    };
+
+    const getTodos = async () => {
+      axios.get("/todos").then(res => { 
+      todos.value = res.data;
+      }).catch(error => {
+        console.error('Error fetching todos:', error);
+      });
+    };
+
+    onMounted(getTodos);
+
+    return { newTodoText, todos, addTodo, markAsDone };
   }
 };
 </script>
 
-<style>
-/* CSS-Styling hier */
+<style scoped>
+/* Add your component's styles here */
 </style>

@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
 )
@@ -82,6 +83,8 @@ func main() {
 	}
 	defer conn.Close(context.Background())
 	router := gin.Default()
+	router.Use(cors.Default())
+
 	router.POST("/todos/:title", createTodoItem)
 	router.PUT("/todos/:id/:title", updateTodoItem)
 	router.GET("/todos/:id", getTodoItemById)
