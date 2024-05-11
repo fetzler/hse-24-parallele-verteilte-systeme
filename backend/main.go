@@ -13,15 +13,18 @@ import (
 
 func getAllTodoItems(c *gin.Context) {
 	rows, _ := conn.Query(context.Background(), "SELECT title FROM tasks")
-	fmt.Println(rows)
-	todoItems, err := pgx.CollectRows(rows, pgx.RowToStructByName[TodoItem])
-	rows.Close()
-	if err != nil {
-		log.Println(err)
-		c.String(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-		return
+	defer rows.Close()
+
+	var todos []string
+
+	for rows.Next() {
+		var todo string
+		rows.Scan(&todo)
+
+		todos = append(todos, todo)
 	}
-	c.JSON(http.StatusOK, todoItems)
+
+	c.JSON(http.StatusOK, todos)
 }
 
 func createTodoItem(c *gin.Context) {
