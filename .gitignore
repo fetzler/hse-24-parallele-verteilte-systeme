@@ -8,6 +8,8 @@
 *.so
 *.dylib
 
+database/postgres-data
+
 # Test binary, built with `go test -c`
 *.test
 
