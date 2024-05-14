@@ -19,6 +19,7 @@ services:
       retries: 20
 
   backend:
+    image: faetzler/hse-24-parallele-verteilte-systeme:v0.1
     build: 
       context: ./backend
       dockerfile: Dockerfile
