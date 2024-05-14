@@ -2,6 +2,7 @@
 Git repository for lab by Fabian Etzler and Luis Urbitsch
 
 ## DockerHub image
+[Link to DockerHub](https://hub.docker.com/r/faetzler/hse-24-parallele-verteilte-systeme)
 To use our image use ```image: faetzler/hse-24-parallele-verteilte-systeme:v0.1``` in docker-compose.yaml
 
 ## API Endpoints
