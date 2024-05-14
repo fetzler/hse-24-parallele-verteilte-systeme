@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -51,7 +52,15 @@ var conn *pgx.Conn
 
 func main() {
 	var err error
-	conn, err = pgx.Connect(context.Background(), "postgres://postgres:postgres@db:5432/todo_list")
+	user := os.Getenv("POSTGRES_USER")
+	host := os.Getenv("POSTGRES_HOST")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	database := os.Getenv("POSTGRES_DB")
+	port := os.Getenv("POSTGRES_PORT")
+
+	connString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user, password, host, port, database)
+
+	conn, err = pgx.Connect(context.Background(), connString)
 	if err != nil {
 		fmt.Println(err)
 		log.Fatalln("error connecting to the database.")
