@@ -37,6 +37,13 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+  todoui-thymeleaf:
+    image: maeddes/todoui-thymeleaf:hse24
+    ports:
+      - "8090:8090"
+    environment:
+      - BACKEND_URL=http://backend:8080/
     
 volumes:
   db:
